@@ -106,8 +106,8 @@ class EnviarReporteVendedores extends Command
             
                 // Encabezados
                 $headersCofasa = [
-                    'Cod. Cliente', 'Cliente', 'Ciudad', 'No. Comp.', 'Fecha Emision', 
-                    'Fecha Vence', 'Monto', 'Abono', 'Dev/Desc', 'Saldo', 
+                    'Cod. Cliente', 'Cliente', 'Ciudad','Tipo', 'No. Comp.', 'Fecha Emision', 
+                    'Fecha Vence', 'Monto', 'Abono', 'Saldo', 
                     'Credito', 'Días', 'Número Control', 'Cod.Generacion'
                 ];
             
@@ -128,12 +128,12 @@ class EnviarReporteVendedores extends Command
                         $factura->Codcli,
                         $factura->Establecimiento,
                         $factura->ciudad,
+                        $factura->Tipo,
                         $factura->numfac,
                         \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y'),
                         \Carbon\Carbon::parse($factura->FechaVence)->format('d/m/Y'),
                         $factura->Monto,
                         $factura->Abonos,
-                        $factura->Dev_Des,
                         $factura->Saldo,
                         $factura->conPago,
                         $factura->Dia,
@@ -157,8 +157,8 @@ class EnviarReporteVendedores extends Command
                 // Agregar los totales al final de la tabla
                 $row = count($facturasCofasa) + 2;
                 $sheetCofasa->setCellValue('A' . $row, 'Totales');
-                $sheetCofasa->setCellValue('G' . $row, $totalMonto);
-                $sheetCofasa->setCellValue('H' . $row, $totalAbono);
+                $sheetCofasa->setCellValue('H' . $row, $totalMonto);
+                $sheetCofasa->setCellValue('I' . $row, $totalAbono);
                 $sheetCofasa->setCellValue('J' . $row, $totalSaldo);
             
                 // Estilo para encabezados y celdas
@@ -218,8 +218,8 @@ class EnviarReporteVendedores extends Command
             
                 // Encabezados
                 $headersNemul = [
-                    'Cod. Cliente', 'Cliente', 'Ciudad', 'No. Comp.', 'Fecha Emision', 
-                    'Fecha Vence', 'Monto', 'Abono','Dev_Des', 'Saldo','DiasCliente', 'Días'
+                    'Cod. Cliente', 'Cliente', 'Ciudad','Tipo', 'No. Comp.', 'Fecha Emision', 
+                    'Fecha Vence', 'Monto', 'Abono','Dev_Des', 'Saldo','Credito', 'Días Vencidos'
                 ];
             
                 // Agregar los encabezados
@@ -232,6 +232,7 @@ class EnviarReporteVendedores extends Command
                 $totalMonto = 0;
                 $totalAbono = 0;
                 $totalSaldo = 0;
+                $totalDev_Des = 0;
             
                 // Llenar la hoja con datos ordenados
                 foreach ($facturasNemul as $row => $factura) {
@@ -239,6 +240,7 @@ class EnviarReporteVendedores extends Command
                         $factura->Codcli,
                         $factura->Establecimiento,
                         $factura->ciudad,
+                        $factura->Tipo,
                         $factura->numfac,
                         \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y'),
                         \Carbon\Carbon::parse($factura->FechaVence)->format('d/m/Y'),
@@ -260,14 +262,17 @@ class EnviarReporteVendedores extends Command
                     $totalMonto += $factura->Monto;
                     $totalAbono += $factura->Abonos;
                     $totalSaldo += $factura->Saldo;
+                    $totalDev_Des += $factura->Dev_Des;
                 }
             
                 // Agregar los totales al final de la tabla
                 $row = count($facturasNemul) + 2;
                 $sheetNemul->setCellValue('A' . $row, 'Totales');
-                $sheetNemul->setCellValue('G' . $row, $totalMonto);
-                $sheetNemul->setCellValue('H' . $row, $totalAbono);
-                $sheetNemul->setCellValue('J' . $row, $totalSaldo);
+                $sheetNemul->setCellValue('H' . $row, $totalMonto);
+                $sheetNemul->setCellValue('I' . $row, $totalAbono);
+                $sheetNemul->setCellValue('J' . $row, $totalDev_Des);
+                $sheetNemul->setCellValue('K' . $row, $totalSaldo);
+
             
                 // Aplicar estilo
                 foreach ($spreadsheet->getAllSheets() as $sheet) {
@@ -322,9 +327,12 @@ class EnviarReporteVendedores extends Command
               $excelContent = file_get_contents($tempFile);
               unlink($tempFile);
       
+            //   Mail::to('rogermorales@labcofasa.com')->send(new correos_vendedores($pdfCofasa, $pdfNemul,$excelContent));
+              Mail::to($vendedor->Correo)
+                 ->bcc('rogermorales@labcofasa.com') 
+                 ->send(new correos_vendedores($pdfCofasa, $pdfNemul, $excelContent));
 
-        Mail::to('rogermorales@labcofasa.com')->send(new correos_vendedores($pdfCofasa, $pdfNemul,$excelContent));
-        $this->info("Correo enviado para {$vendedor->Alias} (Cofasa:{$vendedor->codigo}, Nemul:{$idNemul})");
+              $this->info("Correo enviado para {$vendedor->Alias} (Cofasa:{$vendedor->codigo}, Nemul:{$idNemul})");
     }
 }
 

@@ -60,6 +60,7 @@
                 <th>Cod. Cliente</th>
                 <th>Cliente</th>
                 <th>Ciudad</th>
+                <th>Tipo Doc.</th>
                 <th>No. Comp.</th>
                 <th>Fecha Emision</th>
                 <th>Fecha Vence</th>
@@ -68,7 +69,7 @@
                 <th>Dev/Desc</th>
                 <th>Saldo</th>
                 <th>Credito</th>
-                <th>Días</th>
+                <th>Días Vencidos</th>
                
             </tr>
         </thead>
@@ -78,6 +79,7 @@
                 <td>{{ $factura->Codcli }}</td>
                 <td>{{ $factura->Establecimiento }}</td>
                 <td>{{ $factura->ciudad }}</td>
+                <td>{{ $factura->Tipo }}</td>
                 <td>{{ $factura->numfac }}</td>
                 <td>{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
                 <td>{{ \Carbon\Carbon::parse($factura->FechaVence)->format('d/m/Y') }}</td>
@@ -96,9 +98,10 @@
             <tr>
                 <td><strong>Totales</strong></td>
                 <td colspan="5" style="text-align: right;"></td>
+                <td></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Monto'), 2) }}</strong></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Abonos'), 2) }}</strong></td>
-                <td></td>
+                <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Dev_Des'), 2) }}</strong></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Saldo'), 2) }}</strong></td>
                 <td colspan="2"></td>
             </tr>
@@ -107,7 +110,7 @@
     </table>
 
     <div class="footer">
-        <p> {{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
+        <p> Fecha y Hora de generacion del listado:{{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
     </div>
 </body>
 </html>

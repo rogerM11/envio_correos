@@ -60,7 +60,7 @@
                 <th>Cod. Cliente</th>
                 <th>Cliente</th>
                 <th>Ciudad</th>
-                <th>Tipo</th>
+                <th>Tipo Doc.</th>
                 <th>No. Comp.</th>
                 <th>Fecha Emision</th>
                 <th>Fecha Vence</th>
@@ -68,7 +68,7 @@
                 <th>Abono</th>
                 <th>Saldo</th>
                 <th>Credito</th>
-                <th>Días</th>
+                <th>Días Vencidos</th>
                 <th>Número Control</th>
                 <th>Cod.Generacion</th>
             </tr>
@@ -100,7 +100,6 @@
                 <td colspan="6" style="text-align: right;"></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Monto'), 2) }}</strong></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Abonos'), 2) }}</strong></td>
-                <td></td>
                 <td style="border-bottom: 3px double #000;"><strong>{{ number_format($facturas->sum('Saldo'), 2) }}</strong></td>
                 <td colspan="4"></td>
             </tr>
@@ -112,7 +111,7 @@
   
 
     <div class="footer">
-        <p> {{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
+        <p>Fecha y Hora de generacion del listado: {{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
     </div>
 </body>
 </html>
